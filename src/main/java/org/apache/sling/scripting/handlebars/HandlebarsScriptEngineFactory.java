@@ -29,11 +29,14 @@ public class HandlebarsScriptEngineFactory extends AbstractScriptEngineFactory {
     public final static String HANDLEBARS_MIME_TYPE = "text/x-handlebars";
 
     public final static String HANDLEBARS_SHORT_NAME = "handlebars";
+    
+    private HandlebarsScriptEngine handlebarsScriptEngine;
 
     public HandlebarsScriptEngineFactory() {
         setExtensions(HANDLEBARS_SCRIPT_EXTENSION);
         setMimeTypes(HANDLEBARS_MIME_TYPE);
         setNames(HANDLEBARS_SHORT_NAME);
+        handlebarsScriptEngine = new HandlebarsScriptEngine(this);
     }
 
     public String getLanguageName() {
@@ -45,7 +48,7 @@ public class HandlebarsScriptEngineFactory extends AbstractScriptEngineFactory {
     }
 
     public ScriptEngine getScriptEngine() {
-        return new HandlebarsScriptEngine(this);
+        return handlebarsScriptEngine;
     }
 
 }

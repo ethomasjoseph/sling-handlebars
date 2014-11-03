@@ -17,50 +17,46 @@
  */
 package org.apache.sling.scripting.handlebars;
 
-import java.io.IOException;
 import java.io.Reader;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.sling.api.scripting.SlingBindings;
+import org.apache.sling.api.scripting.SlingScriptHelper;
 import org.apache.sling.scripting.api.AbstractSlingScriptEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.sling.scripting.handlebars.api.HandlebarsCompiler;
+import org.apache.sling.scripting.handlebars.impl.SimpleHandlebarsCompilerImpl;
 
-import com.github.jknack.handlebars.Context;
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-
+/**
+ * Handlebars Scripting Engine tries tries to find a SlingBinding, and a HandlebarsCompiler OSGi service. Defaults to use
+ * {@link SimpleHandlebarsCompilerImpl}
+ * 
+ * @author Ian
+ * @author Thomas Joseph
+ * 
+ */
 public class HandlebarsScriptEngine extends AbstractSlingScriptEngine {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HandlebarsScriptEngine.class);
-
     public HandlebarsScriptEngine(
-            HandlebarsScriptEngineFactory handlebarsScriptEngineFactory) {
+        HandlebarsScriptEngineFactory handlebarsScriptEngineFactory) {
         super(handlebarsScriptEngineFactory);
     }
 
     public Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
-        Handlebars handlebars = new Handlebars();
-        try {
-            Template template = handlebars.compileInline(IOUtils.toString(reader));
-            Map<String, Object> model = new HashMap<String, Object>();
-            Bindings bindings = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
-            for (Object entryObj : bindings.entrySet()) {
-                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) entryObj;
-                model.put((String) entry.getKey(), entry.getValue());
+        Bindings bindings = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
+        SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SlingBindings.SLING);
+        if (sling != null) {
+            HandlebarsCompiler handlebarsCompiler = sling.getService(HandlebarsCompiler.class);
+            if (handlebarsCompiler != null) {
+                return handlebarsCompiler.eval(reader, scriptContext);
             }
-            Context hbContext = Context.newContext(model);
-            template.apply(hbContext, scriptContext.getWriter());
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+        } else {
+            // provide simple scripting if no sling
+            HandlebarsCompiler handlebarsCompiler = new SimpleHandlebarsCompilerImpl();
+            return handlebarsCompiler.eval(reader, scriptContext);
         }
         return null;
     }
-
 }
