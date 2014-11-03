@@ -1,6 +1,6 @@
 # Apache Sling Handlebars Scripting Support 
 
-## Getting Started =============== 
+## Getting Started
 
 This component uses a Maven 2 (http://maven.apache.org/) build 
 environment. It requires a Java 5 JDK (or higher) and Maven 
