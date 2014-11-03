@@ -35,9 +35,9 @@
     <description>Support for Handlebars scripting</description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/sling/whiteboard/ieb/handlebars</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/sling/whiteboard/ieb/handlebars</developerConnection>
-        <url>http://svn.apache.org/viewvc/sling/whiteboard/ieb/handlebars</url>
+	    <connection>scm:git:https://github.com/ethomasjoseph/sling-handlebars.git</connection>
+	    <developerConnection>scm:git:git@github.com:ethomasjoseph/sling-handlebars.git</developerConnection>
+	    <url>https://github.com/ethomasjoseph/sling-handlebars</url>
     </scm>
 
     <build>
